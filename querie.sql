@@ -61,15 +61,35 @@ FROM
 GROUP BY
     category;
 -- View the order_details table. What is the date range of the table?
-
+SELECT MIN(order_date) AS min_date,
+       MAX(order_date) AS max_date FROM restaurant_db.order_details;
 --  How many orders were made within this date range? How many items were ordered within this date range?
+SELECT COUNT(DISTINCT order_id) AS orders 
+	FROM restaurant_db.order_details;
+SELECT COUNT(*) AS items
+FROM restaurant_db.order_details;
 
 --  Which orders had the most number of items?
-
+  SELECT * FROM (
+      SELECT order_id, count(item_id) AS items FROM restaurant_db.order_details 
+      GROUP BY order_id
+      ORDER BY items DESC) AS sub
+    WHERE items = (SELECT MAX(items) FROM (
+      SELECT order_id, count(item_id) AS items FROM restaurant_db.order_details 
+      GROUP BY order_id
+      ORDER BY items DESC) subsub);
 --  How many orders had more than 12 items?
-
+  SELECT count(*) AS orders_over_12_items FROM
+    (SELECT order_id, count(item_id) AS num_items
+     FROM restaurant_db.order_details
+     GROUP BY order_id
+     HAVING num_items > 12) AS num_orders;
  --  Combine the menu_items and order_details tables into a single table
-
+  SELECT *
+    FROM restaurant_db.order_details 
+    LEFT JOIN restaurant_db.menu_items
+    ON restaurant_db.order_details.item_id = restaurant_db.menu_items.menu_item_id
+    LIMIT 10;
 
  --  What were the least and most ordered items? What categories were they in?
 

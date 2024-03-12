@@ -1,5 +1,5 @@
 -- Task 1  View the menu_items table and write a query to find the number of items on the menu
-
+    SELECT count(*) AS menu_items FROM restaurant_db.menu_items;
 -- Task 2 What are the least and most expensive items on the menu?
 
 -- Task 3  How many Italian dishes are on the menu? What are the least and most expensive Italian dishes on the menu?

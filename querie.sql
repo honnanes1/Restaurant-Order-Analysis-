@@ -144,20 +144,23 @@ ORDER BY
 SELECT
     order_id,
     item_name,
-    price
+    price,
+    SUM(price) OVER (PARTITION BY order_id) AS total_order_price
 FROM
     order_details
 JOIN
     menu_items ON item_id = menu_item_id
 WHERE
-    order_id = (SELECT
-                        order_id
-                    FROM
-                        order_details
-                    JOIN
-                        menu_items ON item_id = menu_item_id
-                    GROUP BY
-                        order_id
-                    ORDER BY
-                        SUM(price) DESC
-                    LIMIT 1);
+    order_id = (
+        SELECT
+            order_id
+        FROM
+            order_details
+        JOIN
+            menu_items ON item_id = menu_item_id
+        GROUP BY
+            order_id
+        ORDER BY
+            SUM(price) DESC
+        LIMIT 1
+    );

@@ -92,8 +92,72 @@ FROM restaurant_db.order_details;
     LIMIT 10;
 
  --  What were the least and most ordered items? What categories were they in?
-
+-- Least ordered item 
+SELECT
+    item_name AS least_ordered_item,
+    category AS category_least_ordered,
+    order_count AS order_count_least
+FROM
+    (SELECT
+        item_id,
+        COUNT(*) AS order_count
+    FROM
+        order_details
+    GROUP BY
+        item_id
+    ORDER BY
+        order_count ASC
+    LIMIT 1) AS od
+JOIN
+    menu_items ON item_id = item_id;
+-- Most ordered item 
+SELECT
+    item_name AS most_ordered_item,
+    category AS category_most_ordered,
+    order_count AS order_count_most
+FROM
+    (SELECT
+        item_id,
+        COUNT(*) AS order_count
+    FROM
+        order_details
+    GROUP BY
+        item_id
+    ORDER BY
+        order_count DESC
+    LIMIT 1) AS od
+JOIN
+    menu_items ON item_id = item_id;
  --  What were the top 5 orders that spent the most money?
-
+SELECT
+    order_id,
+    SUM(price) AS total_spent
+FROM
+    order_details od
+JOIN
+    menu_items ON item_id = menu_item_id
+GROUP BY
+    order_id
+ORDER BY
+    total_spent DESC
  -- View the details of the highest spend order. Which specific items were purchased?
-
+SELECT
+    order_id,
+    item_name,
+    price
+FROM
+    order_details
+JOIN
+    menu_items ON item_id = menu_item_id
+WHERE
+    order_id = (SELECT
+                        order_id
+                    FROM
+                        order_details
+                    JOIN
+                        menu_items ON item_id = menu_item_id
+                    GROUP BY
+                        order_id
+                    ORDER BY
+                        SUM(price) DESC
+                    LIMIT 1);
